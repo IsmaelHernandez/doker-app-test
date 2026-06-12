@@ -1,0 +1,653 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Estilos globales de vistas / páginas
+
+// Encabezado de página común
+.page-header {
+  margin-bottom: 2rem;
+  @include flex-col(flex-start, flex-start, 0.25rem);
+  
+  h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.75px;
+    margin: 0;
+  }
+  
+  .page-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+}
+
+// -------------------------------------------------------------
+// VISTA: DASHBOARD
+// -------------------------------------------------------------
+
+// Cuadrícula de estadísticas clave
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  
+  .stat-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    @include flex-col(space-between, stretch);
+    @include transition-all(var(--transition-fast));
+    box-shadow: var(--shadow-sm);
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    
+    .stat-header {
+      @include flex-row(space-between, center);
+      margin-bottom: 1rem;
+      
+      .stat-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      
+      .stat-icon-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        @include flex-row(center, center);
+        
+        &.purple {
+          background-color: rgba(170, 59, 255, 0.1);
+          color: var(--primary);
+        }
+        
+        &.blue {
+          background-color: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+        
+        &.green {
+          background-color: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+        
+        &.orange {
+          background-color: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+        
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
+    
+    .stat-body {
+      .stat-value {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+      }
+      
+      .stat-trend {
+        @include flex-row(flex-start, center, 0.35rem);
+        font-size: 0.8rem;
+        font-weight: 500;
+        
+        &.up {
+          color: #22c55e;
+        }
+        
+        &.down {
+          color: #ef4444;
+        }
+        
+        .trend-text {
+          color: var(--text-muted);
+        }
+      }
+    }
+  }
+}
+
+// Fila de Paneles de Visualización (Simulación de Gráficos)
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    
+    .panel-header {
+      margin-bottom: 1.5rem;
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+// Barras de Progreso e Indicadores de Rendimiento Premium
+.progress-list {
+  @include flex-col(flex-start, stretch, 1.25rem);
+  
+  .progress-item {
+    @include flex-col(flex-start, stretch, 0.4rem);
+    
+    .progress-meta {
+      @include flex-row(space-between, center);
+      font-size: 0.85rem;
+      
+      .progress-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      
+      .progress-val {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+    }
+    
+    .progress-track {
+      height: 8px;
+      background-color: var(--bg-tertiary);
+      border-radius: 4px;
+      overflow: hidden;
+      
+      .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        transition: width var(--transition-slow);
+        
+        &.blue {
+          background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+        
+        &.green {
+          background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+      }
+    }
+  }
+}
+
+// Simulación de Gráfico de Líneas / Columnas con Barras Verticales Interactiva
+.activity-chart {
+  height: 220px;
+  @include flex-row(space-between, flex-end);
+  padding: 1rem 0;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1rem;
+  
+  .chart-column {
+    flex: 1;
+    margin: 0 0.5rem;
+    @include flex-col(flex-end, center);
+    height: 100%;
+    
+    .chart-bar-value {
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+      background-color: var(--primary-bg, rgba(170, 59, 255, 0.15));
+      @include transition-all(var(--transition-fast));
+      position: relative;
+      cursor: pointer;
+      
+      &:hover {
+        background-color: var(--primary);
+        
+        .chart-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, -100%) scale(1);
+        }
+      }
+    }
+    
+    .chart-tooltip {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translate(-50%, -80%) scale(0.9);
+      background-color: var(--text-primary);
+      color: var(--bg-secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      opacity: 0;
+      visibility: hidden;
+      @include transition-all(var(--transition-fast));
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: var(--shadow-md);
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 4px 4px 0;
+        border-style: solid;
+        border-color: var(--text-primary) transparent;
+      }
+    }
+    
+    .chart-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// -------------------------------------------------------------
+// VISTA: PRODUCTS
+// -------------------------------------------------------------
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  
+  .product-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    @include flex-col(space-between, stretch);
+    @include transition-all(var(--transition-fast));
+    box-shadow: var(--shadow-sm);
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+      
+      .product-img-wrapper .product-action-overlay {
+        opacity: 1;
+      }
+    }
+    
+    .product-img-wrapper {
+      aspect-ratio: 4/3;
+      background-color: var(--bg-tertiary);
+      position: relative;
+      @include flex-row(center, center);
+      color: var(--text-muted);
+      overflow: hidden;
+      
+      svg.main-icon {
+        width: 48px;
+        height: 48px;
+        color: var(--text-muted);
+      }
+      
+      .product-badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        background-color: var(--primary);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 6px;
+        z-index: 2;
+      }
+      
+      .product-action-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(11, 15, 25, 0.45);
+        backdrop-filter: blur(4px);
+        @include flex-row(center, center);
+        opacity: 0;
+        @include transition-all(var(--transition-fast));
+        z-index: 1;
+        
+        .overlay-btn {
+          background-color: var(--bg-secondary);
+          color: var(--text-primary);
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          box-shadow: var(--shadow-md);
+          @include transition-all(var(--transition-fast));
+          
+          &:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+    
+    .product-info {
+      padding: 1.25rem;
+      @include flex-col(space-between, stretch, 0.5rem);
+      
+      .product-category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      
+      .product-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        @include text-truncate;
+      }
+      
+      .product-rating {
+        @include flex-row(flex-start, center, 0.25rem);
+        color: #f59e0b;
+        font-size: 0.8rem;
+        
+        span {
+          color: var(--text-muted);
+          font-size: 0.75rem;
+          margin-left: 0.25rem;
+        }
+        
+        svg {
+          width: 14px;
+          height: 14px;
+        }
+      }
+      
+      .product-footer {
+        @include flex-row(space-between, center);
+        margin-top: 0.5rem;
+        
+        .product-price {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        
+        .add-cart-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background-color: var(--bg-tertiary);
+          color: var(--text-primary);
+          @include flex-row(center, center);
+          @include transition-all(var(--transition-fast));
+          
+          &:hover {
+            background-color: var(--primary);
+            color: white;
+          }
+          
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// -------------------------------------------------------------
+// VISTA: PROFILE
+// -------------------------------------------------------------
+.profile-container {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  
+  .profile-banner {
+    height: 160px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    position: relative;
+  }
+  
+  .profile-meta-section {
+    padding: 0 2rem 2rem;
+    position: relative;
+    @include flex-col(flex-start, stretch);
+    
+    @include mobile {
+      padding: 0 1.25rem 1.5rem;
+    }
+    
+    .profile-avatar-row {
+      @include flex-row(space-between, flex-end);
+      margin-top: -50px;
+      margin-bottom: 1.5rem;
+      
+      @include mobile {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .large-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a855f7, #6366f1);
+        border: 4px solid var(--bg-secondary);
+        @include flex-row(center, center);
+        color: white;
+        font-size: 2.25rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-md);
+      }
+      
+      .edit-profile-btn {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 0.55rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        @include flex-row(center, center, 0.5rem);
+        @include transition-all(var(--transition-fast));
+        box-shadow: var(--shadow-sm);
+        
+        &:hover {
+          background-color: var(--bg-tertiary);
+          border-color: var(--text-muted);
+        }
+        
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+    
+    .profile-title-block {
+      margin-bottom: 2rem;
+      
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+      }
+      
+      .profile-handle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+    }
+    
+    .profile-details-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      
+      @include mobile {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .form-group {
+        @include flex-col(flex-start, stretch, 0.4rem);
+        
+        label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+        }
+        
+        input {
+          padding: 0.65rem 1rem;
+          border-radius: 8px;
+          border: 1px solid var(--border-color);
+          background-color: var(--bg-primary);
+          font-size: 0.9rem;
+          @include transition-all(var(--transition-fast));
+          
+          &:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.1);
+          }
+        }
+      }
+    }
+  }
+}
+
+// -------------------------------------------------------------
+// VISTA: SETTINGS
+// -------------------------------------------------------------
+.settings-section {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  
+  .settings-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+  }
+  
+  .settings-list {
+    @include flex-col(flex-start, stretch, 1.25rem);
+    
+    .settings-item {
+      @include flex-row(space-between, center, 1rem);
+      
+      .item-info {
+        @include flex-col(center, flex-start, 0.15rem);
+        
+        .item-label {
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        
+        .item-desc {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+        }
+      }
+      
+      // Control Switch Deslizador Premium
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 24px;
+        
+        input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+          
+          &:checked + .slider {
+            background-color: var(--primary);
+            
+            &::before {
+              transform: translateX(20px);
+            }
+          }
+          
+          &:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+          }
+        }
+        
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          inset: 0;
+          background-color: var(--border-color);
+          @include transition-all(var(--transition-fast));
+          border-radius: 34px;
+          
+          &::before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            @include transition-all(var(--transition-fast));
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+      
+      select {
+        padding: 0.45rem 1.5rem 0.45rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-tertiary);
+        font-size: 0.85rem;
+        cursor: pointer;
+        outline: none;
+        @include transition-all(var(--transition-fast));
+        
+        &:focus {
+          border-color: var(--primary);
+        }
+      }
+    }
+  }
+}

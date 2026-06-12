@@ -1,0 +1,295 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.sidebar {
+  height: 100vh;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  @include flex-col(space-between, stretch);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: width var(--transition-normal);
+  flex-shrink: 0;
+  overflow: visible; // Permite que el botón flotante sobresalga del borde
+  
+  // Ancho dinámico basado en estado colapsado
+  width: $sidebar-expanded-width;
+  
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+    
+    .sidebar-header {
+      padding: 0;
+      justify-content: center;
+      
+      .sidebar-brand {
+        margin: 0;
+        justify-content: center;
+        
+        .sidebar-logo-text {
+          display: none;
+        }
+      }
+    }
+    
+    .sidebar-logo-text {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-10px);
+    }
+    
+    .sidebar-link-text {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-10px);
+    }
+    
+    .sidebar-toggle-btn svg {
+      transform: rotate(180deg);
+    }
+
+    .sidebar-user {
+      padding: 1rem 0.5rem;
+      justify-content: center;
+      
+      .user-info {
+        display: none;
+      }
+    }
+  }
+  
+  // Cabecera del sidebar
+  .sidebar-header {
+    height: $header-height;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    @include flex-row(space-between, center);
+    gap: 0.75rem;
+    flex-shrink: 0;
+    position: relative; // Contenedor para el botón absoluto
+    
+    .sidebar-brand {
+      @include flex-row(flex-start, center, 0.75rem);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        @include flex-row(center, center);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(170, 59, 255, 0.3);
+        flex-shrink: 0;
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+      
+      .sidebar-logo-text {
+        font-family: $font-sans;
+        color: var(--text-primary);
+        transition: opacity var(--transition-normal), transform var(--transition-normal);
+        white-space: nowrap;
+      }
+    }
+    
+    .sidebar-toggle-btn {
+      width: 26px;
+      height: 26px;
+      @include flex-row(center, center);
+      border: 1px solid var(--border-color);
+      border-radius: 50%; // Forma de círculo flotante
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+      position: absolute;
+      right: -13px; // Flota a la mitad sobre el borde derecho
+      top: 22px; // Centrado verticalmente en la cabecera de 70px
+      z-index: 110;
+      @include transition-all(var(--transition-fast));
+      
+      &:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+        transform: scale(1.1);
+      }
+      
+      svg {
+        width: 14px;
+        height: 14px;
+        transition: transform var(--transition-normal);
+      }
+      
+      @include mobile {
+        display: none; // Oculto en móviles ya que usamos hamburguesa
+      }
+    }
+  }
+  
+  // Enlaces de navegación
+  .sidebar-nav {
+    flex: 1;
+    padding: 1.5rem 0.75rem;
+    overflow-y: auto;
+    @include flex-col(flex-start, stretch, 0.35rem);
+    @include custom-scrollbar;
+    
+    .sidebar-link {
+      @include flex-row(flex-start, center, 1rem);
+      padding: 0.75rem 0.85rem;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.95rem;
+      @include transition-all(var(--transition-fast));
+      position: relative;
+      
+      .link-icon {
+        width: 22px;
+        height: 22px;
+        @include flex-row(center, center);
+        color: var(--text-muted);
+        @include transition-all(var(--transition-fast));
+        flex-shrink: 0;
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+      
+      .sidebar-link-text {
+        transition: opacity var(--transition-normal), transform var(--transition-normal);
+        white-space: nowrap;
+      }
+      
+      &:hover {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        
+        .link-icon {
+          color: var(--primary);
+          transform: scale(1.05);
+        }
+      }
+      
+      &.active {
+        background-color: var(--primary-bg, rgba(170, 59, 255, 0.08));
+        color: var(--primary);
+        font-weight: 600;
+        
+        .link-icon {
+          color: var(--primary);
+        }
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 20%;
+          height: 60%;
+          width: 4px;
+          background-color: var(--primary);
+          border-radius: 0 4px 4px 0;
+        }
+      }
+    }
+  }
+  
+  // Usuario inferior
+  .sidebar-user {
+    padding: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    @include flex-row(flex-start, center, 0.75rem);
+    flex-shrink: 0;
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      @include flex-row(center, center);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+      flex-shrink: 0;
+      position: relative;
+
+      .status-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background-color: #22c55e;
+        border: 2px solid var(--bg-secondary);
+        border-radius: 50%;
+      }
+    }
+    
+    .user-info {
+      @include flex-col(center, flex-start);
+      overflow: hidden;
+      
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        @include text-truncate;
+        width: 100%;
+      }
+      
+      .user-role {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        @include text-truncate;
+        width: 100%;
+      }
+    }
+  }
+  
+  // Adaptabilidad para móviles (Drawer lateral)
+  @include mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: none;
+    
+    &.open {
+      transform: translateX(0);
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+      width: 270px;
+    }
+  }
+}
+
+// Overlay para cerrar el sidebar en móviles al hacer click fuera
+.sidebar-overlay {
+  display: none;
+  
+  @include mobile {
+    &.open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 99;
+      animation: fadeInOverlay var(--transition-fast) forwards;
+    }
+  }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

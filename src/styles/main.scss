@@ -1,0 +1,7 @@
+// Punto de entrada global de estilos SASS (SCSS)
+@use 'variables';
+@use 'mixins';
+@use 'layout';
+@use 'sidebar';
+@use 'header';
+@use 'pages';

@@ -1,0 +1,88 @@
+// Mixins de utilidad Sass
+@use 'variables' as *;
+
+// Mixin para efectos de Glassmorphism
+@mixin glass-panel($blur: 16px, $bg: var(--glass-bg), $border: var(--glass-border)) {
+  background: $bg;
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid $border;
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+}
+
+// Mixin para flexbox con alineación centralizada por defecto
+@mixin flex-row($justify: flex-start, $align: center, $gap: 0px) {
+  display: flex;
+  flex-direction: row;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+}
+
+@mixin flex-col($justify: flex-start, $align: stretch, $gap: 0px) {
+  display: flex;
+  flex-direction: column;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+}
+
+// Mixin para truncar texto con puntos suspensivos (...)
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Mixin para gradiente de texto premium
+@mixin text-gradient($start: #a855f7, $end: #6366f1) {
+  background: linear-gradient(135deg, $start, $end);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Mixin para scrollbar minimalista e interactivo
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+    
+    &:hover {
+      background: var(--text-muted);
+    }
+  }
+}
+
+// Mixin para transiciones consistentes y fluidas
+@mixin transition-all($speed: var(--transition-normal)) {
+  transition: all $speed;
+}
+
+// Mixins para responsive breakpoints de manera limpia
+@mixin mobile {
+  @media (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-md}) and (max-width: #{$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-lg}) {
+    @content;
+  }
+}
