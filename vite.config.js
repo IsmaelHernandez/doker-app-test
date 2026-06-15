@@ -12,6 +12,13 @@ export default defineConfig({
     watch: {
       usePolling: true, // Necesario para que Windows comunique los cambios de archivos a Docker
     },
+    proxy: {
+      // Redirige las peticiones /api al backend Express (servicio "api" en docker-compose)
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react()],
   resolve: {

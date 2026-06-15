@@ -7,10 +7,26 @@ services:
     command: sh -c "npm install && npm run dev"
     ports:
       - "5173:5173" # Mapeo del puerto de Vite
+    environment:
+      VITE_API_PROXY_TARGET: http://api:3001 # Dentro de Docker, "api" resuelve al contenedor del backend
     volumes:
       # Este es el volumen principal: sincroniza nuestra carpeta con /app del contenedor
       - ./:/app
       # Volumen anónimo: Evitamos sincronizar node_modules para no romper los binarios de Linux
       - /app/node_modules
+    depends_on:
+      - api
 
-      
+  api:
+    image: node:24-alpine
+    container_name: jobs-api
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3001:3001" # Backend Express (Agente de Empleos)
+    environment:
+      PORT: 3001
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+

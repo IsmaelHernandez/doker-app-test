@@ -1,0 +1,19 @@
+{
+  "name": "api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "session:linkedin": "node src/scrapers/session/linkedin-login.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "multer": "^2.2.0",
+    "pdf-parse": "^2.4.5",
+    "playwright": "^1.61.0"
+  }
+}

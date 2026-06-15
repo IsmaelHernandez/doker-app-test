@@ -1,4 +1,29 @@
+import { useEffect, useState } from 'react';
+import JobSearchPanel from '@components/JobSearchPanel';
+
 export default function Dashboard() {
+  const [apiStatus, setApiStatus] = useState({ state: 'loading', message: 'Conectando con el backend...' });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch('/api/status')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!cancelled) setApiStatus({ state: 'online', message: data.message });
+      })
+      .catch(() => {
+        if (!cancelled) setApiStatus({ state: 'offline', message: 'No se pudo conectar con el backend (api/server.js).' });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const stats = [
     {
       title: 'Ingresos Totales',
@@ -73,6 +98,15 @@ export default function Dashboard() {
         <h1>Bienvenido de nuevo, asdsads</h1>
         <p className="page-subtitle">Aquí está el resumen del rendimiento de tu negocio para el día de hoy.</p>
       </div>
+
+      {/* Estado de conexión con el backend (Agente de Empleos) */}
+      <div className={`api-status-banner ${apiStatus.state}`}>
+        <span className="status-dot" />
+        <span>{apiStatus.message}</span>
+      </div>
+
+      {/* Agente de Búsqueda de Empleo: perfil (CV/prompt) y vacantes encontradas */}
+      <JobSearchPanel />
 
       {/* Grid de Métricas Principales */}
       <div className="stats-grid">

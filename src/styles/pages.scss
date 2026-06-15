@@ -22,6 +22,253 @@
   }
 }
 
+// Indicador de estado de conexión con el backend (Agente de Empleos)
+.api-status-banner {
+  @include flex-row(flex-start, center, 0.6rem);
+  margin-bottom: 1.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  &.online .status-dot {
+    background-color: #22c55e;
+  }
+
+  &.offline .status-dot {
+    background-color: #ef4444;
+  }
+}
+
+// Panel del Agente de Búsqueda de Empleo (perfil CV/prompt + vacantes)
+.job-search-panel {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+
+  .current-profile {
+    background-color: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+
+    .current-profile-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .current-profile-preview {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  .profile-input-tabs {
+    @include flex-row(flex-start, center, 0.5rem);
+    margin-bottom: 1.25rem;
+
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      @include transition-all(var(--transition-fast));
+
+      &.active {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        color: white;
+      }
+    }
+  }
+
+  .profile-input-form {
+    @include flex-col(flex-start, stretch, 1rem);
+
+    .form-group {
+      @include flex-col(flex-start, stretch, 0.4rem);
+
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      input,
+      textarea {
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-primary);
+        font-size: 0.9rem;
+        font-family: inherit;
+        resize: vertical;
+        @include transition-all(var(--transition-fast));
+
+        &:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.1);
+        }
+      }
+    }
+  }
+
+  .primary-btn {
+    align-self: flex-start;
+    background-color: var(--primary);
+    border: none;
+    color: white;
+    padding: 0.65rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    @include transition-all(var(--transition-fast));
+
+    &:hover:not(:disabled) {
+      background-color: var(--primary-light);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .profile-status {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    &.success {
+      color: #22c55e;
+    }
+
+    &.error {
+      color: #ef4444;
+    }
+  }
+
+  .jobs-panel {
+    .search-trigger-form {
+      @include flex-row(flex-start, flex-end, 1rem);
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+
+      .form-group {
+        @include flex-col(flex-start, stretch, 0.4rem);
+        min-width: 180px;
+
+        label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+        }
+
+        input {
+          padding: 0.65rem 1rem;
+          border-radius: 8px;
+          border: 1px solid var(--border-color);
+          background-color: var(--bg-primary);
+          font-size: 0.9rem;
+          font-family: inherit;
+          @include transition-all(var(--transition-fast));
+
+          &:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.1);
+          }
+        }
+      }
+
+      .search-remoto-check {
+        @include flex-row(flex-start, center, 0.4rem);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        padding-bottom: 0.65rem;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        margin: 0;
+      }
+    }
+
+    .jobs-empty {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .jobs-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .jobs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.65rem 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+      }
+
+      th {
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+      }
+
+      td {
+        color: var(--text-secondary);
+      }
+
+      .job-apply-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
 // -------------------------------------------------------------
 // VISTA: DASHBOARD
 // -------------------------------------------------------------
