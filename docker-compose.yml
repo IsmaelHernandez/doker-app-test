@@ -12,3 +12,5 @@ services:
       - ./:/app
       # Volumen anónimo: Evitamos sincronizar node_modules para no romper los binarios de Linux
       - /app/node_modules
+
+      

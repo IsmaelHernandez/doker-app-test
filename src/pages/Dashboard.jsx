@@ -70,7 +70,7 @@ export default function Dashboard() {
     <div>
       {/* Encabezado del Dashboard */}
       <div className="page-header">
-        <h1>Bienvenido de nuevo, John</h1>
+        <h1>Bienvenido de nuevo, asdsads</h1>
         <p className="page-subtitle">Aquí está el resumen del rendimiento de tu negocio para el día de hoy.</p>
       </div>
 
