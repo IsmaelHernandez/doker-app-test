@@ -23,7 +23,7 @@ a {
   text-decoration: none;
 }
 
-button {
+button:not(.p-component) {
   background: none;
   border: none;
   font: inherit;

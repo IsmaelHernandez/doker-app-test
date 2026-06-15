@@ -6,7 +6,7 @@ const BRIEFCASE_ICON = (
   </svg>
 );
 
-export default function Products() {
+export default function JobListings() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

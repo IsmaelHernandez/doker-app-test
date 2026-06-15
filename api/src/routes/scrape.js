@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getScraper } from '../scrapers/index.js';
-import { insertJob } from '../db/index.js';
+import { insertJob, getProfile, updateJobMatchScore } from '../db/index.js';
+import { evaluateMatch } from '../services/matchEvaluator.js';
 
 const router = Router();
 
@@ -47,7 +48,20 @@ router.post('/:source/run', async (req, res) => {
 
   try {
     const vacantes = await scraper.buscar({ puesto, ubicacion, remoto }, { limite });
-    const nuevas = vacantes.filter((vacante) => insertJob(vacante));
+
+    const nuevas = [];
+    for (const vacante of vacantes) {
+      const { inserted, id } = insertJob(vacante);
+      if (inserted) nuevas.push({ ...vacante, id });
+    }
+
+    const profile = getProfile();
+    if (profile) {
+      for (const job of nuevas) {
+        job.match_score = await evaluateMatch(profile.content, job);
+        updateJobMatchScore(job.id, job.match_score);
+      }
+    }
 
     res.json({ source, total: vacantes.length, nuevas: nuevas.length, vacantes: nuevas });
   } catch (err) {

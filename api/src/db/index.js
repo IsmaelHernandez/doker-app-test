@@ -44,9 +44,15 @@ const insertJobStmt = db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?, ?)
 `);
 
+const updateJobMatchScoreStmt = db.prepare('UPDATE jobs SET match_score = ? WHERE id = ?');
+
+const getProfileStmt = db.prepare('SELECT * FROM profile WHERE id = 1');
+
+const jobsWithoutScoreStmt = db.prepare('SELECT * FROM jobs WHERE match_score IS NULL ORDER BY created_at DESC');
+
 /**
  * Inserta una vacante si su "link" no existe todavía.
- * @returns {boolean} true si se insertó, false si era un duplicado.
+ * @returns {{ inserted: boolean, id: number|null }} id de la fila si se insertó, null si era un duplicado.
  */
 export function insertJob(vacante) {
   const result = insertJobStmt.run(
@@ -59,5 +65,26 @@ export function insertJob(vacante) {
     new Date().toISOString(),
   );
 
-  return result.changes > 0;
+  return { inserted: result.changes > 0, id: result.changes > 0 ? Number(result.lastInsertRowid) : null };
+}
+
+/**
+ * Actualiza el porcentaje de compatibilidad (0-100) de una vacante.
+ */
+export function updateJobMatchScore(id, matchScore) {
+  updateJobMatchScoreStmt.run(matchScore, id);
+}
+
+/**
+ * @returns {object | undefined} el perfil del candidato (CV o prompt), si existe.
+ */
+export function getProfile() {
+  return getProfileStmt.get();
+}
+
+/**
+ * @returns {object[]} vacantes guardadas que aún no tienen match_score calculado.
+ */
+export function getJobsWithoutScore() {
+  return jobsWithoutScoreStmt.all();
 }

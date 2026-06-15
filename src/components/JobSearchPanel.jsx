@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
 
 const SOURCE_LABELS = {
   linkedin: 'LinkedIn',
@@ -20,6 +24,8 @@ export default function JobSearchPanel() {
   const [searchRemoto, setSearchRemoto] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchStatus, setSearchStatus] = useState({ type: 'idle', message: '' });
+  const [evaluating, setEvaluating] = useState(false);
+  const [minMatch, setMinMatch] = useState(0);
 
   const loadProfile = () => {
     fetch('/api/profile')
@@ -134,6 +140,54 @@ export default function JobSearchPanel() {
     }
   };
 
+  const handleEvaluate = async () => {
+    setEvaluating(true);
+    setSearchStatus({ type: 'idle', message: '' });
+
+    try {
+      const res = await fetch('/api/jobs/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ todas: true }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'No se pudo evaluar la compatibilidad.');
+
+      loadJobs();
+      setSearchStatus({
+        type: 'success',
+        message: `Se evaluaron ${data.evaluadas} vacante(s) pendiente(s).`,
+      });
+    } catch (err) {
+      setSearchStatus({ type: 'error', message: err.message });
+    } finally {
+      setEvaluating(false);
+    }
+  };
+
+  const filteredJobs = jobs.filter((job) => minMatch === 0 || (job.match_score ?? 0) >= minMatch);
+
+  const sourceBodyTemplate = (job) => SOURCE_LABELS[job.source] ?? job.source;
+
+  const matchBodyTemplate = (job) => {
+    if (job.match_score == null) return <Tag severity="secondary" value="Sin evaluar" />;
+
+    const score = Math.round(job.match_score);
+    const severity = score >= 80 ? 'success' : score >= 50 ? 'warning' : 'danger';
+    return <Tag severity={severity} value={`${score}%`} />;
+  };
+
+  const linkBodyTemplate = (job) => (
+    <Button
+      label="Ver vacante"
+      icon="pi pi-external-link"
+      size="small"
+      text
+      onClick={() => window.open(job.link, '_blank', 'noopener,noreferrer')}
+    />
+  );
+
   return (
     <div className="job-search-panel">
       <div className="dashboard-panel">
@@ -151,20 +205,18 @@ export default function JobSearchPanel() {
         )}
 
         <div className="profile-input-tabs">
-          <button
+          <Button
             type="button"
-            className={`tab-btn ${activeTab === 'cv' ? 'active' : ''}`}
+            label="Subir CV (PDF)"
+            outlined={activeTab !== 'cv'}
             onClick={() => setActiveTab('cv')}
-          >
-            Subir CV (PDF)
-          </button>
-          <button
+          />
+          <Button
             type="button"
-            className={`tab-btn ${activeTab === 'prompt' ? 'active' : ''}`}
+            label="Describir puesto"
+            outlined={activeTab !== 'prompt'}
             onClick={() => setActiveTab('prompt')}
-          >
-            Describir puesto
-          </button>
+          />
         </div>
 
         {activeTab === 'cv' ? (
@@ -178,9 +230,7 @@ export default function JobSearchPanel() {
                 onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
               />
             </div>
-            <button type="submit" className="primary-btn" disabled={saving}>
-              {saving ? 'Procesando...' : 'Subir CV'}
-            </button>
+            <Button type="submit" label={saving ? 'Procesando...' : 'Subir CV'} loading={saving} />
           </form>
         ) : (
           <form className="profile-input-form" onSubmit={handlePromptSubmit}>
@@ -194,9 +244,7 @@ export default function JobSearchPanel() {
                 onChange={(e) => setPromptText(e.target.value)}
               />
             </div>
-            <button type="submit" className="primary-btn" disabled={saving}>
-              {saving ? 'Guardando...' : 'Guardar perfil'}
-            </button>
+            <Button type="submit" label={saving ? 'Guardando...' : 'Guardar perfil'} loading={saving} />
           </form>
         )}
 
@@ -204,6 +252,8 @@ export default function JobSearchPanel() {
           <p className={`profile-status ${status.type}`}>{status.message}</p>
         )}
       </div>
+
+      <br />
 
       <div className="dashboard-panel jobs-panel">
         <div className="panel-header">
@@ -239,46 +289,51 @@ export default function JobSearchPanel() {
             />
             Remoto
           </label>
-          <button type="submit" className="primary-btn" disabled={searching}>
-            {searching ? 'Buscando en OCC...' : 'Buscar ahora en OCC'}
-          </button>
+          <Button type="submit" label={searching ? 'Buscando en OCC...' : 'Buscar ahora en OCC'} loading={searching} />
+          <Button
+            type="button"
+            label={evaluating ? 'Evaluando...' : 'Evaluar compatibilidad'}
+            outlined
+            loading={evaluating}
+            onClick={handleEvaluate}
+          />
         </form>
 
         {searchStatus.message && (
           <p className={`profile-status ${searchStatus.type}`}>{searchStatus.message}</p>
         )}
 
+        <div className="match-filter">
+          <span className="match-filter-label">Filtrar por match:</span>
+          {[0, 50, 80].map((umbral) => (
+            <Button
+              key={umbral}
+              type="button"
+              size="small"
+              label={umbral === 0 ? 'Todas' : `≥ ${umbral}%`}
+              outlined={minMatch !== umbral}
+              onClick={() => setMinMatch(umbral)}
+            />
+          ))}
+        </div>
+
         {jobs.length === 0 ? (
           <p className="jobs-empty">Aún no hay vacantes guardadas. Cuando el agente encuentre coincidencias, aparecerán aquí.</p>
         ) : (
-          <div className="jobs-table-wrapper">
-            <table className="jobs-table">
-              <thead>
-                <tr>
-                  <th>Puesto</th>
-                  <th>Empresa</th>
-                  <th>Fuente</th>
-                  <th>Match</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job) => (
-                  <tr key={job.id}>
-                    <td>{job.title}</td>
-                    <td>{job.company || '—'}</td>
-                    <td>{SOURCE_LABELS[job.source] ?? job.source}</td>
-                    <td>{job.match_score != null ? `${Math.round(job.match_score)}%` : '—'}</td>
-                    <td>
-                      <a href={job.link} target="_blank" rel="noreferrer" className="job-apply-link">
-                        Ver vacante
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            value={filteredJobs}
+            paginator
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            emptyMessage="No hay vacantes que cumplan con el match mínimo seleccionado."
+            stripedRows
+          >
+            <Column field="title" header="Puesto" />
+            <Column field="company" header="Empresa" body={(job) => job.company || '—'} />
+            <Column header="Fuente" body={sourceBodyTemplate} />
+            <Column header="Match" body={matchBodyTemplate} />
+            <Column header="" body={linkBodyTemplate} />
+          </DataTable>
         )}
       </div>
     </div>
